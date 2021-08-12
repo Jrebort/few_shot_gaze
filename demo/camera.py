@@ -26,10 +26,11 @@ def cam_calibrate(cam_idx, cap, cam_calib):
     while True:
         ret, frame = cap.read()
         frame_copy = frame.copy()
-
         corners = []
         if ret:
             gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+            #import pdb
+            #pdb.set_trace()
             retc, corners = cv2.findChessboardCorners(gray, (9, 6), None)
             if retc:
                 cv2.cornerSubPix(gray, corners, (11, 11), (-1, -1), criteria)
@@ -50,7 +51,7 @@ def cam_calibrate(cam_idx, cap, cam_calib):
                     break
 
     # compute calibration matrices
-
+    __import__('pdb').set_trace() 
     ret, mtx, dist, rvecs, tvecs = cv2.calibrateCamera(obj_points, img_points, frames[0].shape[0:2], None, None)
 
     # check

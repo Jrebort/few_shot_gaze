@@ -57,7 +57,6 @@ k = 9
 
 # Set device
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-
 # Create network
 sys.path.append("../src")
 from models import DTED
@@ -77,10 +76,10 @@ gaze_network = DTED(
 # Load T-ED weights if available
 assert os.path.isfile(ted_parameters_path)
 print('> Loading: %s' % ted_parameters_path)
-ted_weights = torch.load(ted_parameters_path)
-if torch.cuda.device_count() == 1:
-    if next(iter(ted_weights.keys())).startswith('module.'):
-        ted_weights = dict([(k[7:], v) for k, v in ted_weights.items()])
+ted_weights = torch.load(ted_parameters_path,map_location=torch.device(device))
+#if torch.cuda.device_count() == 1:
+if next(iter(ted_weights.keys())).startswith('module.'):
+    ted_weights = dict([(k[7:], v) for k, v in ted_weights.items()])
 
 #####################################
 
@@ -88,13 +87,14 @@ if torch.cuda.device_count() == 1:
 full_maml_parameters_path = maml_parameters_path +'/%02d.pth.tar' % k
 assert os.path.isfile(full_maml_parameters_path)
 print('> Loading: %s' % full_maml_parameters_path)
-maml_weights = torch.load(full_maml_parameters_path)
+maml_weights = torch.load(full_maml_parameters_path,map_location=torch.device(device))
 ted_weights.update({  # rename to fit
     'gaze1.weight': maml_weights['layer01.weights'],
     'gaze1.bias':   maml_weights['layer01.bias'],
     'gaze2.weight': maml_weights['layer02.weights'],
     'gaze2.bias':   maml_weights['layer02.bias'],
 })
+print(ted_weights)
 gaze_network.load_state_dict(ted_weights)
 
 #################################

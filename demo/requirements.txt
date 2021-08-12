@@ -3,8 +3,8 @@ h5py
 imageio
 moviepy
 numpy
-opencv_python
-torch
+torch==1.3.1
+opencv-python
 torchvision
 tqdm
 yacs
